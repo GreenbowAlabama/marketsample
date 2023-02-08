@@ -1,8 +1,55 @@
 import React, { Component } from 'react';
+import Web3 from 'web3'
 import logo from '../logo.png';
 import './App.css';
+import Marketplace from '../abis/Marketplace.json'
 
 class App extends Component {
+
+  async componentWillMount() {
+    await this.loadWeb3()
+    await this.loadBlockchainData()
+  }
+
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.ethereum)
+    }
+    else {
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+  }
+
+  
+  
+  async loadBlockchainData() { 
+    const web3 = window.web3
+    //load accounts
+    const accounts = await web3.eth.getAccounts()
+    this.setState({ account: accounts[0] })
+    const networkId = await web3.eth.net.getId()
+    console.log(networkId)
+    const abi = Marketplace.abi
+    const address = Marketplace.networks[5777].address
+    const marketplace = web3.eth.Contract(abi, address)
+  }
+
+
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: '',
+      productCount: 0,
+      products: [],
+      loading: true
+    }
+  }
+
   render() {
     return (
       <div>
@@ -13,10 +60,16 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            Dapp hot dog
           </a>
+          <ul className="navbar-nav px-3">
+            <li className="nav-item text-nowrap d-none-d-sm-none d-sm-block">
+              <small className="text-white"><span id="account">{this.state.account}</span></small>
+            </li>
+          </ul>
         </nav>
         <div className="container-fluid mt-5">
+          
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto">
@@ -27,7 +80,7 @@ class App extends Component {
                 >
                   <img src={logo} className="App-logo" alt="logo" />
                 </a>
-                <h1>Dapp University Starter Kit</h1>
+                <h1>DAPP DAPP</h1>
                 <p>
                   Edit <code>src/components/App.js</code> and save to reload.
                 </p>
